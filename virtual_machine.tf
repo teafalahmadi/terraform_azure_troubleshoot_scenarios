@@ -37,7 +37,7 @@ resource "azurerm_network_interface" "public_nic" {
 }
 
 resource "azurerm_network_interface" "private_nic" {
-  name                = "public_nic"
+  name                = "private_nic"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
