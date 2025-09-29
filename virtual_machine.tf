@@ -105,9 +105,15 @@ output "tls_private_key" {
   sensitive = true
 }
 
-resource "azurerm_linux_virtual_machine" "vm" {
+locals {
+  nic = {
+    public_nic  = azurerm_network_interface.public_nic
+    private_nic = azurerm_network_interface.private_nic
+  }
+}
 
-  for_each = azurerm_network_interface.*.id 
+resource "azurerm_linux_virtual_machine" "vm" {
+  for_each = local.nic
 
   name                = "${var.vm_name}-learn"
   resource_group_name = azurerm_resource_group.rg.name
@@ -115,8 +121,26 @@ resource "azurerm_linux_virtual_machine" "vm" {
   size                = "Standard_F2"
   admin_username      = "adminuser"
   network_interface_ids = [
-   each.id,
+    each.value.id
   ]
+
+  admin_ssh_key {
+    username   = "azureuser"
+    public_key = tls_private_key.example_ssh.public_key_openssh
+  }
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "0001-com-ubuntu-server-jammy"
+    sku       = "22_04-lts"
+    version   = "latest"
+  }
+}
 
 
 
