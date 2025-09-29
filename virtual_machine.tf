@@ -74,19 +74,23 @@ resource "azurerm_network_security_group" "sg_ping" {
   name                = "sg_ping"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
+  tags                = var.tags
+}
 
-  security_rule {
-    name                       = "allow_ping"
-    priority                   = 100
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Icmp"
-    source_port_range          = "*"
-    destination_port_range     = "*"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-    source_application_security_group_ids = [azurerm_network_security_group.sg_8080.id]
-  }
+resource "azurerm_network_security_rule" "allow_ping" {
+  name                                  = "allow_ping"
+  priority                              = 100
+  direction                             = "Inbound"
+  access                                = "Allow"
+  protocol                              = "Icmp"
+  source_port_range                     = "*"
+  destination_port_range                = "*"
+  source_address_prefix                 = "*"
+  destination_address_prefix            = "*"
+  source_application_security_group_ids = [azurerm_network_security_group.sg_8080.id]
+  resource_group_name                   = azurerm_resource_group.rg.name
+  network_security_group_name           = azurerm_network_security_group.sg_ping.name
+}
 
   tags = var.tags
 }
