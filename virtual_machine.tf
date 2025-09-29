@@ -105,7 +105,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
 
   for_each = azurerm_network_interface.*.id 
 
-  name                = ${var.vm_name}-learn
+  name                = "${var.vm_name}-learn"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   size                = "Standard_F2"
